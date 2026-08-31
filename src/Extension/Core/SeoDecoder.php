@@ -40,13 +40,13 @@ class SeoDecoder extends SeoDecoder_parent
     }
 
     /**
-     * Core's processSeoCall() calls _decodeOldUrl() directly with the raw request params
+     * Core's processSeoCall() calls decodeOldUrl() directly with the raw request params
      * whenever decodeUrl() doesn't find a live oxseo match — bypassing the prefix swap above.
      * Without this override, a stale URL requested under a langOnDemand prefix (e.g. "fr/...")
      * never matches oxseohistory, whose idents are keyed on the real shop language prefix
      * ("en/..."), so the old-URL redirect silently fails and the request 404s instead.
      */
-    protected function _decodeOldUrl($seoUrl)
+    protected function decodeOldUrl($seoUrl)
     {
         /** @var DeepL $deepL */
         $deepL = Registry::get(DeepL::class);
@@ -54,11 +54,11 @@ class SeoDecoder extends SeoDecoder_parent
         $langOnDemand = $this->detectLangOnDemandPrefix((string) $seoUrl, $deepL);
 
         if ($langOnDemand === null) {
-            return parent::_decodeOldUrl($seoUrl);
+            return parent::decodeOldUrl($seoUrl);
         }
 
         $shopLang = $deepL->getShopLangForLanguageOnDemand();
-        $redirectUrl = parent::_decodeOldUrl(
+        $redirectUrl = parent::decodeOldUrl(
             $this->swapLangOnDemandPrefix((string) $seoUrl, $langOnDemand, $shopLang)
         );
 

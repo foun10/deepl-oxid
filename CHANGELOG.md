@@ -8,10 +8,10 @@ Each OXID line has its own release series: `7.x` on the `b-7.x` branch for OXID 
 `b-6.x` branch for OXID 6 - the major version tracks the OXID line it targets, not a generation
 of the module. The two are developed in parallel, so a fix usually appears in both.
 
-## [6.0.0] - 2026-08-28
+## [7.0.0] - 2026-08-28
 
-First public release for OXID 6. The module existed internally before this; the public history
-and the version numbering start here.
+First public release for OXID 7. The major version matches the OXID major it targets, so this is
+the `7.x` line; `6.x` covers OXID 6 in parallel.
 
 ### Added
 
@@ -23,7 +23,7 @@ and the version numbering start here.
 - An admin overview of the DeepL character quota and the local cache, including a per language
   pair breakdown and a targeted purge by translated text.
 - `hreflang` entries and language switcher items for every offered language, integrated into
-  the Flow theme through template blocks.
+  the Apex theme.
 - Configurable source language (`foun10DeepLSourceLanguage`) - the language translations are
   generated from, previously fixed to English.
 - Configurable list of offered languages (`foun10DeepLLanguagesOnDemand`). Clearing it switches
@@ -39,6 +39,9 @@ and the version numbering start here.
 
 ### Fixed
 
+- The API key was unreachable on OXID 7. It was read through the general config lookup, which
+  returns nothing for module settings on that line, so the module stayed silently inert. It now
+  goes through the module setting service.
 - Translating a numeric multilang field aborted the surrounding widget on PHP 8, because a
   non-string value reached `strpos()`.
 - The cache key depended on the order of the translate options, so the same request could miss
@@ -50,6 +53,6 @@ and the version numbering start here.
   empty or unrelated while an on-demand language is active. Switch suggest off for those
   languages.
 
-- Fields containing template syntax are skipped at the model and translated after the template
-  has been rendered instead.
+- Content containing Twig syntax is not translated. OXID 7 offers no hook comparable to the
+  OXID 6 fallback, so those fields stay in the source language.
 - Translations are never reviewed - what DeepL returns is what customers see.

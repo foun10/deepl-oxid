@@ -10,9 +10,9 @@ class ShopControl extends ShopControl_parent
 {
     protected $deepLTranslateInit = false;
 
-    protected function _runOnce()
+    protected function runOnce()
     {
-        parent::_runOnce();
+        parent::runOnce();
 
         if (!$this->deepLTranslateInit && !$this->isAdmin()) {
             $this->deepLTranslateInit = true;
@@ -44,7 +44,7 @@ class ShopControl extends ShopControl_parent
      * across every base-language combination instead of just one.
      *
      * NOTE: this does NOT cover widget.php (WidgetControl) requests - confirmed via production
-     * diagnostics that WidgetControl never reaches this _runOnce() override despite extending
+     * diagnostics that WidgetControl never reaches this runOnce() override despite extending
      * ShopControl in plain PHP terms. See foun10\DeepL\Extension\Core\WidgetControl for the
      * equivalent fix on that path.
      */

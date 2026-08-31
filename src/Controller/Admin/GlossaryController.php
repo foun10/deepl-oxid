@@ -16,7 +16,7 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class GlossaryController extends AdminController
 {
-    protected $_sThisTemplate = 'foun10_deepl_glossary.tpl';
+    protected $_sThisTemplate = '@foun10DeepL/admin/foun10_deepl_glossary.html.twig';
 
     /**
      * Below this, a search term matches too much of the cache to be a deliberate, targeted lookup -

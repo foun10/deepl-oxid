@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace foun10\DeepL\Tests\Integration;
 
 use foun10\DeepL\Core\DeepL;
-use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -45,7 +46,6 @@ class ModuleExtensionsTest extends TestCase
             \OxidEsales\Eshop\Application\Controller\SearchController::class => \foun10\DeepL\Extension\Application\Controller\SearchController::class,
             \OxidEsales\Eshop\Core\SeoDecoder::class => \foun10\DeepL\Extension\Core\SeoDecoder::class,
             \OxidEsales\Eshop\Core\UtilsUrl::class => \foun10\DeepL\Extension\Core\UtilsUrl::class,
-            \OxidEsales\Eshop\Core\UtilsView::class => \foun10\DeepL\Extension\Core\UtilsView::class,
             \OxidEsales\Eshop\Core\ViewConfig::class => \foun10\DeepL\Extension\Core\ViewConfig::class,
             \OxidEsales\Eshop\Core\ShopControl::class => \foun10\DeepL\Extension\Core\ShopControl::class,
             \OxidEsales\Eshop\Core\WidgetControl::class => \foun10\DeepL\Extension\Core\WidgetControl::class,
@@ -150,15 +150,18 @@ class ModuleExtensionsTest extends TestCase
     }
 
     /**
-     * Regression guard for how module settings are read. On OXID 6 they live in oxconfig
-     * under the module prefix, so the ordinary config lookup finds them - unlike on b-7.x,
-     * where the same lookup returns null and the module setting service is required.
+     * Regression guard. The module reads its API key through getModuleSetting(); reading it
+     * through Config::getConfigParam() - as it did until this test was written - returns null
+     * on OXID 7, because module settings live in the module configuration and never reach
+     * oxconfig. The symptom is an empty API key and no error anywhere.
      */
     public function testApiKeyIsReadBackThroughThePathTheModuleUses(): void
     {
-        $config = Registry::getConfig();
-        $module = 'module:' . DeepL::MODULE_ID;
-        $config->saveShopConfVar('str', 'foun10DeepLApiKey', 'integration-test-key', null, $module);
+        $settingService = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingServiceInterface::class);
+
+        $settingService->saveString('foun10DeepLApiKey', 'integration-test-key', DeepL::MODULE_ID);
 
         try {
             $deepL = new class extends DeepL {
@@ -170,7 +173,7 @@ class ModuleExtensionsTest extends TestCase
 
             $this->assertSame('integration-test-key', $deepL->readApiKey());
         } finally {
-            $config->saveShopConfVar('str', 'foun10DeepLApiKey', '', null, $module);
+            $settingService->saveString('foun10DeepLApiKey', '', DeepL::MODULE_ID);
         }
     }
 }

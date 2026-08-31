@@ -1,0 +1,25 @@
+{% extends 'widget/header/languages.html.twig' %}
+
+{#
+    Add the on-demand languages to the language switcher.
+
+    parent() renders the shop's own languages first, so the dropdown reads as one list with the
+    maintained languages on top. The active on-demand language is marked so a visitor can see
+    which one they are currently reading.
+
+    Note that Apex only renders this widget at all when the shop has more than one language
+    configured; a single-language shop shows no switcher for the module to extend.
+#}
+{% block dd_layout_page_header_icon_menu_languages_list %}
+    {{ parent() }}
+
+    {% set activeOnDemand = oViewConf.getActiveLanguageOnDemand() %}
+    {% for language in oViewConf.getOnDemandLanguageUrls() %}
+        <a class="dropdown-item{% if language.langIso == activeOnDemand %} active{% endif %} {{ language.langIso }}"
+           title="{{ language.langName }}"
+           href="{{ language.langUrl|raw }}"
+           hreflang="{{ language.langIso }}">
+            {{ language.langName }}
+        </a>
+    {% endfor %}
+{% endblock %}

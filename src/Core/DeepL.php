@@ -7,6 +7,8 @@ use DeepL\DeepLClient;
 use DeepL\TranslateTextOptions;
 use foun10\DeepL\Model\Translation;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ModuleSettingServiceInterface;
 
 class DeepL
 {
@@ -71,13 +73,18 @@ class DeepL
     }
 
     /**
-     * On OXID 6 module settings are stored in oxconfig alongside the shop settings, so the
-     * ordinary config lookup finds them. The b-7.x branch has to go through the module
-     * setting service instead, because there they never reach oxconfig.
+     * Module settings live in the module configuration in OXID 7, not in oxconfig, so
+     * Config::getConfigParam() returns null for them - reading them that way silently yields
+     * an empty API key. The b-6.x branch, where module settings do live in oxconfig, reads
+     * them through getConfigParam() instead.
      */
     protected function getModuleSetting(string $name): string
     {
-        return (string) $this->getConfigParam($name);
+        $settingService = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingServiceInterface::class);
+
+        return (string) $settingService->getString($name, self::MODULE_ID);
     }
 
     /**
@@ -123,13 +130,16 @@ class DeepL
 
     /**
      * Array-valued module settings need their own accessor - the string one cannot carry them.
-     * On OXID 6 they sit in oxconfig like every other setting.
      *
      * @return array<string, string>
      */
     protected function getModuleSettingCollection(string $name): array
     {
-        return (array) $this->getConfigParam($name);
+        $settingService = ContainerFactory::getInstance()
+            ->getContainer()
+            ->get(ModuleSettingServiceInterface::class);
+
+        return (array) $settingService->getCollection($name, self::MODULE_ID);
     }
 
     protected function getShopLanguageAbbr(): string
@@ -545,6 +555,21 @@ class DeepL
         return true;
     }
 
+    /**
+     * Languages a visitor can request that the shop does not maintain itself.
+     *
+     * Configurable: which languages a shop wants to offer is its own decision, and the list
+     * this shipped with was the one the module was originally built for. The setting holds
+     * "abbreviation => label" pairs. Clearing it offers nothing, which is the intended way to
+     * switch the feature off without deactivating the module - DEFAULT_LANGUAGES_ON_DEMAND is
+     * only the value a fresh installation starts with.
+     *
+     * The abbreviations here are shop-side. Where DeepL expects a different code - en-US for
+     * en, pt-PT for pt, nb for no - getDeepLLang() maps them on the way out, so a language
+     * added to this setting is handled automatically.
+     *
+     * @return array<string, string>
+     */
     public function getLanguagesOnDemand(): array
     {
         if (!$this->isDeepLTranslateActive()) {

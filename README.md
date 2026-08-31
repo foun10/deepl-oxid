@@ -1,8 +1,8 @@
 # foun10 DeepL
 
-[![CI b-6.x](https://img.shields.io/github/actions/workflow/status/foun10/deepl-oxid/ci.yml?branch=b-6.x&label=CI%20b-6.x)](https://github.com/foun10/deepl-oxid/actions/workflows/ci.yml?query=branch%3Ab-6.x)
-[![PHP](https://img.shields.io/badge/PHP-%5E7.4%20%7C%7C%20%5E8.0-777BB4?logo=php&logoColor=white)](#compatibility)
-[![OXID eShop](https://img.shields.io/badge/OXID%20eShop-6.2%20%E2%80%93%206.5-e30613)](#compatibility)
+[![CI b-7.x](https://img.shields.io/github/actions/workflow/status/foun10/deepl-oxid/ci.yml?branch=b-7.x&label=CI%20b-7.x)](https://github.com/foun10/deepl-oxid/actions/workflows/ci.yml?query=branch%3Ab-7.x)
+[![PHP](https://img.shields.io/badge/PHP-%5E8.0-777BB4?logo=php&logoColor=white)](#compatibility)
+[![OXID eShop](https://img.shields.io/badge/OXID%20eShop-7.0%20%E2%80%93%207.5-e30613)](#compatibility)
 [![License](https://img.shields.io/badge/license-GPL--3.0--only-blue)](LICENSE)
 
 > Translates shop content into additional languages at runtime via the DeepL API, without
@@ -31,10 +31,12 @@ This is not a statement of intent — if a combination is listed here, CI proves
 
 | OXID eShop | PHP |
 |---|---|
-| 6.2 | 7.4 |
-| 6.3 | 7.4, 8.0 |
-| 6.4 | 7.4, 8.0 |
-| 6.5 | 7.4, 8.0, 8.1 |
+| 7.0 | 8.0, 8.1 |
+| 7.1 | 8.1, 8.2 |
+| 7.2 | 8.2, 8.3 |
+| 7.3 | 8.2, 8.3, 8.4 |
+| 7.4 | 8.2, 8.3, 8.4 |
+| 7.5 | 8.3, 8.4, 8.5 |
 
 <!-- ci-matrix:end -->
 
@@ -124,8 +126,8 @@ own, so a single-language shop shows no switcher for the module to extend.
 
 ## Using the translation from another module
 
-The translation service is a plain class, so any other module can use it - an export module
-producing a feed in a language the shop does not maintain, for instance:
+The translation service is a plain class in the container, so any other module can use it - an
+export module producing a feed in a language the shop does not maintain, for instance:
 
 ```php
 use foun10\DeepL\Core\DeepL;
@@ -169,10 +171,11 @@ Two things to know before running it over a large catalogue:
 
 ## Known limitations
 
-- **Content containing template syntax is skipped at the model.** Fields whose text contains
-  `[{ ... }]` (or Twig delimiters, in content migrated from an OXID 7 shop) are not sent to
-  DeepL, because mangled delimiters would break the page. On this branch they are picked up
-  later instead, after the template has been rendered.
+- **Content containing Twig syntax is not translated.** Product and category fields whose text
+  contains `{{ ... }}` or `{% ... %}` are skipped, because sending template markup to DeepL can
+  come back with the delimiters mangled and break the page. On the OXID 6 line such fields are
+  picked up later, after the template has been rendered; OXID 7 has no equivalent hook, so on
+  this branch they stay in the source language.
 - **The first request for a language is slow.** Nothing is cached yet, so the whole page is
   translated in one go. Subsequent requests are served from the database. A per-request time
   budget stops a page from hanging on the API - once it is exceeded, the rest of that page is

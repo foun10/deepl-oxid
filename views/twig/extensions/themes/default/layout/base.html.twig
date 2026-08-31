@@ -1,0 +1,16 @@
+{% extends 'layout/base.html.twig' %}
+
+{#
+    Announce the on-demand languages to search engines.
+
+    parent() keeps the links OXID renders for the shop's own languages, including x-default;
+    this only appends the ones the module serves through DeepL. The list is filtered to the
+    on-demand languages on purpose - the view config also knows the shop's own, and emitting
+    those again would duplicate every hreflang tag.
+#}
+{% block head_link_hreflang %}
+    {{ parent() }}
+    {% for language in oViewConf.getOnDemandLanguageUrls() %}
+        <link rel="alternate" hreflang="{{ language.langIso }}" href="{{ language.langUrl|raw }}">
+    {% endfor %}
+{% endblock %}

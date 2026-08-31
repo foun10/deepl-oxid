@@ -15,14 +15,13 @@ $aModule = [
         'de' => 'Übersetzt Shop-Inhalte per DeepL zur Laufzeit.',
         'en' => 'Translates shop content at runtime via DeepL.',
     ],
-    'version' => '6.0.0',
+    'version' => '7.0.0',
     'author' => 'foun10 GmbH',
     'email' => 'info@foun10.de',
     'extend' => [
         \OxidEsales\Eshop\Application\Controller\SearchController::class => \foun10\DeepL\Extension\Application\Controller\SearchController::class,
         \OxidEsales\Eshop\Core\Output::class => \foun10\DeepL\Extension\Core\Output::class,
         \OxidEsales\Eshop\Core\SeoDecoder::class => \foun10\DeepL\Extension\Core\SeoDecoder::class,
-        \OxidEsales\Eshop\Core\UtilsView::class => \foun10\DeepL\Extension\Core\UtilsView::class,
         \OxidEsales\Eshop\Core\ViewConfig::class => \foun10\DeepL\Extension\Core\ViewConfig::class,
         \OxidEsales\Eshop\Core\UtilsUrl::class => \foun10\DeepL\Extension\Core\UtilsUrl::class,
         \OxidEsales\Eshop\Core\ShopControl::class => \foun10\DeepL\Extension\Core\ShopControl::class,
@@ -38,7 +37,6 @@ $aModule = [
         \OxidEsales\Eshop\Application\Model\DeliverySet::class => \foun10\DeepL\Extension\Application\Model\DeliverySet::class,
         \OxidEsales\Eshop\Application\Model\Links::class => \foun10\DeepL\Extension\Application\Model\Links::class,
         \OxidEsales\Eshop\Application\Model\Manufacturer::class => \foun10\DeepL\Extension\Application\Model\Manufacturer::class,
-        \OxidEsales\Eshop\Application\Model\News::class => \foun10\DeepL\Extension\Application\Model\News::class,
         \OxidEsales\Eshop\Application\Model\Payment::class => \foun10\DeepL\Extension\Application\Model\Payment::class,
         \OxidEsales\Eshop\Application\Model\SelectList::class => \foun10\DeepL\Extension\Application\Model\SelectList::class,
         \OxidEsales\Eshop\Application\Model\State::class => \foun10\DeepL\Extension\Application\Model\State::class,
@@ -52,26 +50,9 @@ $aModule = [
         'foun10_deepl_stats' => StatsController::class,
         'foun10_deepl_glossary' => GlossaryController::class,
     ],
-    'templates' => [
-        'foun10_deepl_stats.tpl' => 'foun10/DeepL/views/admin/tpl/foun10_deepl_stats.tpl',
-        'foun10_deepl_glossary.tpl' => 'foun10/DeepL/views/admin/tpl/foun10_deepl_glossary.tpl',
-    ],
-    // Smarty block extensions. OXID 7 has no equivalent - there the module ships Twig
-    // templates under views/twig/extensions/themes/ instead. The block names are the same in
-    // both themes, which keeps the two branches close.
-    'blocks' => [
-        [
-            'template' => 'layout/base.tpl',
-            'block' => 'head_link_hreflang',
-            'file' => 'views/blocks/head_link_hreflang.tpl',
-        ],
-        [
-            'template' => 'widget/header/languages.tpl',
-            'block' => 'dd_layout_page_header_icon_menu_languages_list',
-            'file' => 'views/blocks/languages_list.tpl',
-        ],
-    ],
-
+    // OXID 7 registers views/twig/ automatically as a Twig namespace named after the
+    // module ID (@foun10DeepL/...). On b-6.x this block holds the Smarty .tpl mapping.
+    'templates' => [],
     'settings' => [
         [
             'group' => 'foun10DeepL',

@@ -22,7 +22,7 @@ class Language extends Language_parent
 
     public function detectLanguageByBrowser()
     {
-        $browserLanguage = $this->_getBrowserLanguage();
+        $browserLanguage = $this->getBrowserLanguage();
 
         /** @var DeepL $deepL */
         $deepL = Registry::get(DeepL::class);

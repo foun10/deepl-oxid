@@ -15,7 +15,7 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class StatsController extends AdminController
 {
-    protected $_sThisTemplate = 'foun10_deepl_stats.tpl';
+    protected $_sThisTemplate = '@foun10DeepL/admin/foun10_deepl_stats.html.twig';
 
     public function render()
     {

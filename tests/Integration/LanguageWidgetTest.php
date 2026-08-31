@@ -20,15 +20,15 @@ use PHPUnit\Framework\TestCase;
  *
  * The view config is substituted with one returning a fixed pair of languages, so the test is
  * about the template wiring rather than about configuration: if the block name changes, the
- * blocks entry disappears from metadata.php, this fails.
+ * extension path stops matching, or the module template is dropped from the chain, this fails.
  */
 class LanguageWidgetTest extends TestCase
 {
     /** The theme block this module extends, and the template that declares it. */
-    private const WIDGET_TEMPLATE = 'widget/header/languages.tpl';
+    private const WIDGET_TEMPLATE = 'widget/header/languages.html.twig';
 
     /** The theme whose blocks this module extends. */
-    private const THEME = 'flow';
+    private const THEME = 'apex';
 
     /**
      * A freshly set up shop does not necessarily have an active theme - the CI shops do not,
@@ -55,29 +55,6 @@ class LanguageWidgetTest extends TestCase
             ->get(TemplateRendererBridgeInterface::class)
             ->getTemplateRenderer();
 
-        // OXID 6 raises 'Undefined array key "theme"' in UtilsView::filterTemplateBlocks()
-        // whenever a template carries module blocks but none of them is theme-specific. Ours
-        // apply to every theme on purpose, so this fires for us - and for any module that does
-        // the same. It is a notice on PHP 7.4 and a warning on PHP 8, where failOnWarning turns
-        // it into a failure. The bug is in the shop, so it is swallowed here rather than by
-        // relaxing failOnWarning for the whole suite, which would hide our own warnings too.
-        set_error_handler(
-            static function (int $severity, string $message): bool {
-                return strpos($message, 'Undefined array key "theme"') !== false
-                    || strpos($message, 'Undefined index: theme') !== false;
-            },
-            E_WARNING | E_NOTICE
-        );
-
-        try {
-            return $this->renderWidget($renderer);
-        } finally {
-            restore_error_handler();
-        }
-    }
-
-    private function renderWidget(object $renderer): string
-    {
         return $renderer->renderTemplate(self::WIDGET_TEMPLATE, [
             'oViewConf' => $this->viewConfigOfferingTestLanguages(),
             'oView' => oxNew(\OxidEsales\Eshop\Application\Controller\StartController::class),
@@ -127,7 +104,7 @@ class LanguageWidgetTest extends TestCase
                 $language['langName'],
                 $output,
                 $language['langName'] . ' is missing from the language switcher - the module template '
-                . 'is no longer registered as a block for ' . self::WIDGET_TEMPLATE
+                . 'is no longer extending ' . self::WIDGET_TEMPLATE
             );
             $this->assertStringContainsString($language['langUrl'], $output);
         }
