@@ -1,0 +1,57 @@
+{
+  "name": "foun10/deepl",
+  "description": "On-the-fly DeepL translation for OXID eShop",
+  "type": "oxideshop-module",
+  "keywords": [
+    "oxid",
+    "modules",
+    "eShop"
+  ],
+  "homepage": "https://www.foun10.de",
+  "license": "GPL-3.0-only",
+  "authors": [
+    {
+      "name": "foun10 GmbH",
+      "email": "info@foun10.de"
+    }
+  ],
+  "extra": {
+    "oxideshop": {
+      "target-directory": "foun10/DeepL",
+      "blacklist-filter": [
+        "tests/**/*",
+        "vendor/**/*",
+        "phpunit.xml",
+        "composer.lock",
+        ".github/**/*"
+      ]
+    }
+  },
+  "require": {
+    "php": "^7.4 || ^8.0",
+    "deeplcom/deepl-php": "^1.18",
+    "php-http/curl-client": "^2.1",
+    "http-interop/http-factory-guzzle": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "foun10\\DeepL\\": "./src"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "foun10\\DeepL\\Tests\\": "./tests"
+    }
+  },
+  "scripts": {
+    "tests-unit": "phpunit --testsuite unit",
+    "tests-mutation": "infection --threads=4 --min-covered-msi=75 --no-interaction",
+    "tests-integration": "phpunit -c phpunit.integration.xml"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

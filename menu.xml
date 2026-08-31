@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OX>
+    <OXMENU id="FOUN10_MODULES">
+        <MAINMENU id="FOUN10_DEEPL">
+            <SUBMENU id="FOUN10_DEEPL_STATS" cl="foun10_deepl_stats" />
+            <SUBMENU id="FOUN10_DEEPL_GLOSSARY" cl="foun10_deepl_glossary" />
+        </MAINMENU>
+    </OXMENU>
+</OX>

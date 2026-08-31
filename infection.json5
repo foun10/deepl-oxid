@@ -1,0 +1,42 @@
+{
+    // Mutation testing for the shop-independent core logic.
+    //
+    // Deliberately limited to src/Core: that is the only part covered by unit tests so
+    // far. Including all of src/ would make the metrics consist almost entirely of
+    // uncovered mutants (extensions and models need a shop) and say nothing useful.
+    //
+    // Infection runs as a PHAR rather than a require-dev dependency: it needs PHP 8.1+
+    // while this module supports PHP 7.4 upwards - as require-dev it would break
+    // dependency resolution across the lower half of the CI matrix.
+    "source": {
+        "directories": [
+            "src/Core"
+        ]
+    },
+    "mutators": {
+        "@default": true,
+
+        // getUntranslatableCssClasses() could technically be private, but protected is
+        // intentional: the list should stay extendable in subclasses. The mutant is
+        // therefore not killable without giving up that extension point.
+        "ProtectedVisibility": {
+            "ignore": ["foun10\\DeepL\\Core\\DeepL::getUntranslatableCssClasses"]
+        },
+
+        // preg_quote() around the CSS class guards against future entries: today's list
+        // only contains 'votingcomment', which has no regex metacharacters, so the mutant
+        // behaves identically. It becomes killable once the class list is configurable -
+        // at which point this ignore should be removed again.
+        "PregQuote": {
+            "ignore": ["foun10\\DeepL\\Core\\DeepL::extractUntranslatableBlocks"]
+        }
+    },
+    // The gate in composer.json sits at 75 % covered MSI, which is where the suite stands
+    // today - it exists to stop regressions, not to certify the code as done. Most remaining
+    // survivors are in log message concatenation and defensive "?? $text" fallbacks, which
+    // cost more to pin than they are worth. Raise the gate whenever the number rises.
+    "logs": {
+        "text": "infection.log"
+    },
+    "tmpDir": ".infection"
+}
